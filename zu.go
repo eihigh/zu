@@ -52,10 +52,10 @@ func update(s *ebiten.Image) error {
 	return nil
 }
 
-func Next() bool {
+func Next() {
 	tick <- struct{}{}
+	// TODO cleanup toremove
 	<-tock
-	return true
 }
 
 func DecodeImage(r io.Reader) (*ebiten.Image, error) {

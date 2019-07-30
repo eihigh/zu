@@ -43,12 +43,10 @@ func main() {
 }
 
 func app() error {
-	for zu.Next() {
+	for !quit.IsDown() {
+		zu.Next()
 		if spc.IsDown() {
 			popup()
-		}
-		if quit.IsDown() {
-			break
 		}
 	}
 	return nil
@@ -57,24 +55,26 @@ func app() error {
 func popup() {
 	v := newPopupView()
 	zu.PushView(v)
-	defer zu.PopView()
+	defer zu.WillRemoveView(v)
 
-	for zu.Next() {
+	for !v.Opened() {
+		zu.Next()
+	}
+
+	for !spc.IsDown() {
+		zu.Next()
 		if left.IsDown() {
 			v.x--
 		}
 		if right.IsDown() {
 			v.x++
 		}
-		if spc.IsDown() {
-			break
-		}
 	}
 }
 
 type popupView struct {
-	x    float64
-	from zu.Time
+	x            float64
+	from, closed zu.Time
 }
 
 func newPopupView() *popupView {
@@ -83,9 +83,25 @@ func newPopupView() *popupView {
 	}
 }
 
+func (v *popupView) Opened() bool {
+	return true
+}
+
+func (v *popupView) Close() {
+	v.closed = zu.Now()
+}
+
+func (v *popupView) Done() bool {
+	return zu.Now()-v.closed > 60
+}
+
 func (v *popupView) View() {
 	zu.DrawImage(eimg, nil, zu.Translate(v.x, 0))
 	zu.NewTimer(v.from).Once(func() {
 		zu.DrawImage(eimg, nil, zu.Translate(100, 100))
 	})
+
+	if v.closed != 0 {
+		zu.DrawImage(eimg, nil, zu.Translate(float64(zu.Now()-v.closed), 200))
+	}
 }

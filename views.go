@@ -1,12 +1,19 @@
 package zu
 
 var (
-	views []View
+	views    []View
+	toremove []View
 )
 
 // View represents a drawing function.
 type View interface {
 	View()
+}
+
+type PromiseView interface {
+	View
+	Close()
+	Done() bool
 }
 
 // PushView pushes the view on top.
@@ -17,6 +24,11 @@ func PushView(v View) {
 // PopView pops the view on top.
 func PopView() {
 	views = views[:len(views)-1]
+}
+
+func WillRemoveView(v PromiseView) {
+	v.Close()
+	toremove = append(toremove, v)
 }
 
 // RemoveView removes the specified view.
