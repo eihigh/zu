@@ -64,11 +64,3 @@ func DecodeImage(r io.Reader) (*ebiten.Image, error) {
 	img, _ := ebiten.NewImageFromImage(src, ebiten.FilterDefault)
 	return img, nil
 }
-
-func DrawImage(src, dst *ebiten.Image) {
-	opt := &ebiten.DrawImageOptions{}
-	if dst == nil {
-		dst = screen
-	}
-	dst.DrawImage(src, opt)
-}

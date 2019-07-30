@@ -16,6 +16,13 @@ var (
 		Keys: []ebiten.Key{ebiten.KeyQ},
 	}
 
+	left = zu.Input{
+		Keys: []ebiten.Key{ebiten.KeyLeft},
+	}
+	right = zu.Input{
+		Keys: []ebiten.Key{ebiten.KeyRight},
+	}
+
 	fs   = http.Dir(".")
 	eimg *ebiten.Image
 )
@@ -48,16 +55,27 @@ func app() error {
 }
 
 func popup() {
-	zu.PushViewFunc(popupView)
+	v := &popupView{}
+	zu.PushView(v)
 	defer zu.PopView()
 
 	for zu.Next() {
+		if left.IsDown() {
+			v.x--
+		}
+		if right.IsDown() {
+			v.x++
+		}
 		if spc.IsDown() {
 			break
 		}
 	}
 }
 
-func popupView() {
-	zu.DrawImage(eimg, nil)
+type popupView struct {
+	x float64
+}
+
+func (v *popupView) View() {
+	zu.DrawImage(eimg, nil, zu.Translate(v.x, 0))
 }
