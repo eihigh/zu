@@ -34,9 +34,6 @@ func Main(app func() error) error {
 
 func update(s *ebiten.Image) error {
 	screen = s
-	if ebiten.IsDrawingSkipped() {
-		return nil
-	}
 	select {
 	case <-done:
 		return errFinished
@@ -44,8 +41,10 @@ func update(s *ebiten.Image) error {
 	}
 
 	<-tick
-	for _, v := range views {
-		v.View()
+	if !ebiten.IsDrawingSkipped() {
+		for _, v := range views {
+			v.View()
+		}
 	}
 	tock <- struct{}{}
 	return nil
