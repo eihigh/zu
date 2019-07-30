@@ -1,0 +1,22 @@
+package main
+
+import "github.com/eihigh/zu"
+
+var (
+	bullets []*bullet
+)
+
+type bullet struct {
+	pos, vec complex128
+}
+
+func spawn() {
+	if zu.Now()%5 == 0 {
+		pos := complex(100, 100)
+		vec := complex(0, 1)
+		b := &bullet{
+			pos: pos, vec: vec,
+		}
+		bullets = append(bullets, b)
+	}
+}

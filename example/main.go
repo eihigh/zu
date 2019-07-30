@@ -59,6 +59,9 @@ func popup() {
 	zu.PushView(v)
 	defer zu.WillRemoveView(v)
 
+	zu.PushSystemFunc(spawn)
+	defer zu.PopSystem()
+
 	for zu.Next() {
 		if v.opened() {
 			break
