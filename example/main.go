@@ -10,7 +10,7 @@ import (
 
 var (
 	spc = zu.Input{
-		Keys: []ebiten.Key{ebiten.KeySpace},
+		Keys: []ebiten.Key{ebiten.KeyA},
 	}
 	quit = zu.Input{
 		Keys: []ebiten.Key{ebiten.KeyQ},
@@ -43,9 +43,11 @@ func main() {
 }
 
 func app() error {
-	for !quit.IsDown() {
-		zu.Next()
-		if spc.IsDown() {
+	for zu.Next() {
+		if quit.IsDown() {
+			break
+		}
+		if spc.OnDown() {
 			popup()
 		}
 	}
@@ -57,12 +59,16 @@ func popup() {
 	zu.PushView(v)
 	defer zu.WillRemoveView(v)
 
-	for !v.Opened() {
-		zu.Next()
+	for zu.Next() {
+		if v.opened() {
+			break
+		}
 	}
 
-	for !spc.IsDown() {
-		zu.Next()
+	for zu.Next() {
+		if spc.OnDown() {
+			break
+		}
 		if left.IsDown() {
 			v.x--
 		}
@@ -83,7 +89,7 @@ func newPopupView() *popupView {
 	}
 }
 
-func (v *popupView) Opened() bool {
+func (v *popupView) opened() bool {
 	return true
 }
 

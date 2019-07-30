@@ -52,10 +52,24 @@ func update(s *ebiten.Image) error {
 	return nil
 }
 
-func Next() {
+func Next() bool {
+	newviews := []View{}
+	for _, v := range views {
+		e := false
+		for _, r := range toremove {
+			if r.Done() && r == v {
+				e = true
+				break
+			}
+		}
+		if !e {
+			newviews = append(newviews, v)
+		}
+	}
+	views = newviews
 	tick <- struct{}{}
-	// TODO cleanup toremove
 	<-tock
+	return true
 }
 
 func DecodeImage(r io.Reader) (*ebiten.Image, error) {

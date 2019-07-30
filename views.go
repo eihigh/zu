@@ -2,7 +2,7 @@ package zu
 
 var (
 	views    []View
-	toremove []View
+	toremove []PromiseView
 )
 
 // View represents a drawing function.
