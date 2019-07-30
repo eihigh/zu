@@ -13,6 +13,7 @@ var (
 	tock = make(chan struct{})
 
 	screen *ebiten.Image
+	count  = 0
 
 	errFinished = fmt.Errorf("finished")
 
@@ -46,6 +47,7 @@ func update(s *ebiten.Image) error {
 			v.View()
 		}
 	}
+	count++
 	tock <- struct{}{}
 	return nil
 }

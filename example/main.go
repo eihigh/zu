@@ -55,7 +55,7 @@ func app() error {
 }
 
 func popup() {
-	v := &popupView{}
+	v := newPopupView()
 	zu.PushView(v)
 	defer zu.PopView()
 
@@ -73,9 +73,19 @@ func popup() {
 }
 
 type popupView struct {
-	x float64
+	x    float64
+	from zu.Time
+}
+
+func newPopupView() *popupView {
+	return &popupView{
+		from: zu.Now(),
+	}
 }
 
 func (v *popupView) View() {
 	zu.DrawImage(eimg, nil, zu.Translate(v.x, 0))
+	zu.NewTimer(v.from).Once(func() {
+		zu.DrawImage(eimg, nil, zu.Translate(100, 100))
+	})
 }
