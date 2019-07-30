@@ -18,6 +18,10 @@ func PushSystemFunc(f func()) {
 	systems = append(systems, systemFunc(f))
 }
 
+func PushSystems(sys ...System) {
+	systems = append(systems, sys...)
+}
+
 func PopSystem() {
 	systems = systems[:len(systems)-1]
 }

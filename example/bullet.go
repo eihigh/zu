@@ -20,3 +20,19 @@ func spawn() {
 		bullets = append(bullets, b)
 	}
 }
+
+type spawnSystem struct {
+	from zu.Time
+}
+
+func newSpawnSystem() *spawnSystem {
+	s := &spawnSystem{
+		from: zu.Now(),
+	}
+	zu.PushSystems(s)
+	return s
+}
+
+func (s *spawnSystem) Update() {
+
+}
