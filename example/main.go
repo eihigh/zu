@@ -90,14 +90,25 @@ func battle() {
 
 	// select party action
 	for zu.Next() {
-		escape := chooseAction(v)
-		if escape {
-			if ok := escapeBattle(); ok {
-				// when successfully escaped
-				v.escaped = true
+		switch selectPartyAction() {
+		case escape:
+			if execEscape() {
+				successfullyEscaped()
 				return
 			}
+		case attack:
+			execAttack()
+			break
+		case magic:
+			selectMagic()
+			break
 		}
+	}
+	// actions fixed
+
+	// exec battle
+	for zu.Next() {
+		nextMessage()
 	}
 }
 */
