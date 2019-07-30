@@ -25,3 +25,7 @@ func PushSystems(sys ...System) {
 func PopSystem() {
 	systems = systems[:len(systems)-1]
 }
+
+func RemoveSystems(sys ...System) {
+
+}

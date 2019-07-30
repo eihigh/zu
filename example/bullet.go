@@ -29,7 +29,6 @@ func newSpawnSystem() *spawnSystem {
 	s := &spawnSystem{
 		from: zu.Now(),
 	}
-	zu.PushSystems(s)
 	return s
 }
 

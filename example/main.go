@@ -61,7 +61,7 @@ func popup() {
 
 	s := newSpawnSystem()
 	zu.PushSystems(s)
-	defer zu.PopSystem()
+	defer zu.RemoveSystems(s)
 
 	for zu.Next() {
 		if v.opened() {
@@ -81,6 +81,26 @@ func popup() {
 		}
 	}
 }
+
+/*
+func battle() {
+	v := newBattleView()
+	zu.PushView(v)
+	defer zu.WillRemoveView(v)
+
+	// select party action
+	for zu.Next() {
+		escape := chooseAction(v)
+		if escape {
+			if ok := escapeBattle(); ok {
+				// when successfully escaped
+				v.escaped = true
+				return
+			}
+		}
+	}
+}
+*/
 
 type popupView struct {
 	x            float64
