@@ -43,6 +43,10 @@ func (p Point) Eq(q Point) bool {
 	return p == q
 }
 
+func (p Point) Dot(q Point) float64 {
+	return p.X*q.Y + p.Y*q.Y
+}
+
 // Pt is shorthand for Point{X, Y}.
 func Pt(X, Y float64) Point {
 	return Point{X, Y}
@@ -58,12 +62,12 @@ func (r Rect) String() string {
 }
 
 // Dx returns r's width.
-func (r Rect) Dx() int {
+func (r Rect) Dx() float64 {
 	return r.Max.X - r.Min.X
 }
 
 // Dy returns r's height.
-func (r Rect) Dy() int {
+func (r Rect) Dy() float64 {
 	return r.Max.Y - r.Min.Y
 }
 

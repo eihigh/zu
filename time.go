@@ -1,35 +1,26 @@
 package zu
 
-type Time int
-
-func Now() Time {
-	return Time(count)
-}
-
 type Timer struct {
-	from Time
-	Max  Time
+	count    int
+	min, max int
 }
 
-func NewTimer(from Time) Timer {
-	return Timer{
-		from: from,
-	}
+func (t Timer) Count() int {
+	return t.count - 1
 }
 
-func (t Timer) Elapsed() Time {
-	return Now() - t.from
-}
-
-func (t Timer) Ratio() float64 {
-	if t.Max == 0 {
-		return 0
-	}
-	return float64(t.Elapsed()) / float64(t.Max)
-}
-
-func (t Timer) Once(f func()) {
-	if t.Elapsed() == 0 {
+func (t Timer) Span(start, end int, f func()) {
+	if start <= t.Count() && t.Count() < end {
 		f()
 	}
+}
+
+func (t Timer) ElapsedRatio() float64 {
+	return float64(t.Count()) / float64(t.max)
+}
+
+func _() {
+	t := Timer{}
+	t.Span(0, 60, func() {
+	})
 }
