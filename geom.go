@@ -1,6 +1,7 @@
 package zu
 
 import (
+	"image"
 	"math"
 	"strconv"
 )
@@ -147,6 +148,10 @@ func (r Rect) Sub(p Point) Rect {
 		Point{r.Min.X - p.X, r.Min.Y - p.Y},
 		Point{r.Max.X - p.X, r.Max.Y - p.Y},
 	}
+}
+
+func (r Rect) Image() image.Rectangle {
+	return image.Rect(int(r.Min.X), int(r.Min.Y), int(r.Max.X), int(r.Max.Y))
 }
 
 // Intersection returns the largest rectangle contained by both r and s. If the
