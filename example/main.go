@@ -2,147 +2,66 @@ package main
 
 import (
 	_ "image/png"
-	"net/http"
+	"io"
+	"os"
 
 	"github.com/eihigh/zu"
 	"github.com/hajimehoshi/ebiten"
 )
 
+type Player struct {
+	pos, spd, acc zu.Point
+}
+
 var (
-	spc = zu.Input{
-		Keys: []ebiten.Key{ebiten.KeyA},
+	e      *ebiten.Image
+	pl     Player
+	grav   = 0.3  // 重力加速度
+	abyssY = 220. // 下限Y
+
+	right = zu.Input{
+		Keys: []ebiten.Key{ebiten.KeyRight},
+	}
+	left = zu.Input{
+		Keys: []ebiten.Key{ebiten.KeyLeft},
 	}
 	quit = zu.Input{
 		Keys: []ebiten.Key{ebiten.KeyQ},
 	}
-
-	left = zu.Input{
-		Keys: []ebiten.Key{ebiten.KeyLeft},
-	}
-	right = zu.Input{
-		Keys: []ebiten.Key{ebiten.KeyRight},
-	}
-
-	fs   = http.Dir(".")
-	eimg *ebiten.Image
 )
 
 func main() {
-	f, err := fs.Open("e.png")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
-	eimg, err = zu.DecodeImage(f)
-	if err != nil {
-		panic(err)
-	}
-
-	zu.Main(app)
+	f, _ := os.Open("./e.png")
+	e, _ = zu.DecodeImage(f)
+	zu.Run(update, draw, 320, 240, 2, "title")
 }
 
-func app() error {
-	for zu.Next() {
-		if quit.IsDown() {
-			break
-		}
-		if spc.OnDown() {
-			popup()
-		}
+func update() error {
+	if quit.IsDown() {
+		return io.EOF
+	}
+	pl.acc.Y = grav
+
+	switch {
+	case right.IsDown():
+		pl.spd.X = 4
+	case left.IsDown():
+		pl.spd.X = -4
+	default:
+		pl.spd.X = 0
+	}
+
+	pl.spd = pl.spd.Add(pl.acc)
+	pl.pos = pl.pos.Add(pl.spd)
+	if pl.pos.Y > abyssY {
+		pl.pos.Y = abyssY
 	}
 	return nil
 }
 
-func popup() {
-	v := newPopupView()
-	zu.PushView(v)
-	defer zu.WillRemoveView(v)
-
-	s := newSpawnSystem()
-	zu.PushSystems(s)
-	defer zu.RemoveSystems(s)
-
-	for zu.Next() {
-		if v.opened() {
-			break
-		}
-	}
-
-	for zu.Next() {
-		if spc.OnDown() {
-			break
-		}
-		if left.IsDown() {
-			v.x--
-		}
-		if right.IsDown() {
-			v.x++
-		}
-	}
-}
-
-/*
-func battle() {
-	v := newBattleView()
-	zu.PushView(v)
-	defer zu.WillRemoveView(v)
-
-	// select party action
-	for zu.Next() {
-		switch selectPartyAction() {
-		case escape:
-			if execEscape() {
-				successfullyEscaped()
-				return
-			}
-		case attack:
-			execAttack()
-			break
-		case magic:
-			selectMagic()
-			break
-		}
-	}
-	// actions fixed
-
-	// exec battle
-	for zu.Next() {
-		nextMessage()
-	}
-}
-*/
-
-type popupView struct {
-	x            float64
-	from, closed zu.Time
-}
-
-func newPopupView() *popupView {
-	return &popupView{
-		from: zu.Now(),
-	}
-}
-
-func (v *popupView) opened() bool {
-	return true
-}
-
-func (v *popupView) Close() {
-	v.closed = zu.Now()
-}
-
-func (v *popupView) Done() bool {
-	return zu.Now()-v.closed > 60
-}
-
-func (v *popupView) View() {
-	zu.DrawImage(eimg, nil, zu.Translate(v.x, 0))
-	zu.NewTimer(v.from).Once(func() {
-		zu.DrawImage(eimg, nil, zu.Translate(100, 100))
-	})
-
-	if v.closed != 0 {
-		zu.DrawImage(eimg, nil, zu.Translate(float64(zu.Now()-v.closed), 200))
-	}
+func draw() {
+	zu.Copy(
+		e, nil,
+		zu.MoveP(pl.pos),
+	)
 }

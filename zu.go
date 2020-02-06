@@ -1,7 +1,6 @@
 package zu
 
 import (
-	"fmt"
 	"image"
 	"io"
 
@@ -9,67 +8,27 @@ import (
 )
 
 var (
-	tick = make(chan struct{})
-	tock = make(chan struct{})
-
-	screen *ebiten.Image
+	Screen *ebiten.Image
 	count  = 0
-
-	errFinished = fmt.Errorf("finished")
-
-	done = make(chan struct{})
+	Tick   = make(Q)
 )
 
-func Main(app func() error) error {
-	var err error
+type Q chan struct{}
 
-	go func() {
-		err = app()
-		close(done)
-	}()
-
-	ebiten.Run(update, 320, 240, 2, "title")
-
-	return err
-}
-
-func update(s *ebiten.Image) error {
-	screen = s
-	select {
-	case <-done:
-		return errFinished
-	default:
+func Run(update func() error, draw func(), width, height int, scale float64, title string) error {
+	u := func(s *ebiten.Image) error {
+		Screen = s
+		count++
+		if err := update(); err != nil {
+			return err
+		}
+		if !ebiten.IsDrawingSkipped() {
+			draw()
+		}
+		return nil
 	}
 
-	<-tick
-	if !ebiten.IsDrawingSkipped() {
-		for _, v := range views {
-			v.View()
-		}
-	}
-	count++
-	tock <- struct{}{}
-	return nil
-}
-
-func Next() bool {
-	newviews := []View{}
-	for _, v := range views {
-		e := false
-		for _, r := range toremove {
-			if r.Done() && r == v {
-				e = true
-				break
-			}
-		}
-		if !e {
-			newviews = append(newviews, v)
-		}
-	}
-	views = newviews
-	tick <- struct{}{}
-	<-tock
-	return true
+	return ebiten.Run(u, width, height, scale, title)
 }
 
 func DecodeImage(r io.Reader) (*ebiten.Image, error) {
