@@ -60,8 +60,5 @@ func update() error {
 }
 
 func draw() {
-	zu.Copy(
-		e, nil,
-		zu.MoveP(pl.pos),
-	)
+	zu.Copy(e, nil, zu.Center(e), zu.MoveP(pl.pos))
 }

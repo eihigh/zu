@@ -1,6 +1,10 @@
 package zu
 
-import "github.com/hajimehoshi/ebiten"
+import (
+	"image"
+
+	"github.com/hajimehoshi/ebiten"
+)
 
 var (
 	dio = &ebiten.DrawImageOptions{}
@@ -18,6 +22,13 @@ func Move(x, y float64) DrawOptionFn {
 func MoveP(p Point) DrawOptionFn {
 	return func() {
 		dio.GeoM.Translate(p.X, p.Y)
+	}
+}
+
+func Center(i image.Image) DrawOptionFn {
+	return func() {
+		s := i.Bounds().Size()
+		dio.GeoM.Translate(float64(-s.X)/2, float64(-s.Y)/2)
 	}
 }
 
