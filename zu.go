@@ -10,10 +10,7 @@ import (
 var (
 	Screen *ebiten.Image
 	count  = 0
-	Tick   = make(Q)
 )
-
-type Q chan struct{}
 
 func Run(update func() error, draw func(), width, height int, scale float64, title string) error {
 	u := func(s *ebiten.Image) error {
