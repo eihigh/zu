@@ -6,9 +6,9 @@ import (
 	"strconv"
 )
 
-// Pi2 returns math.Pi * 2 * value.
-func Pi2(value float64) float64 {
-	return math.Pi * 2 * value
+func Wave(min, max, rate float64) float64 {
+	sin := math.Sin(rate * math.Pi * 2)
+	return min + (max-min)*(sin+1)/2
 }
 
 type Point struct {

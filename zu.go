@@ -3,8 +3,13 @@ package zu
 import (
 	"image"
 	"io"
+	"math"
 
 	"github.com/hajimehoshi/ebiten"
+)
+
+const (
+	Tau = 2 * math.Pi
 )
 
 var (

@@ -29,7 +29,7 @@ func (t Timer) Span(start, end int, f func(Timer)) Timer {
 	return t
 }
 
-func (t Timer) Repeat(duration, offset int, f func(Timer)) {
+func (t Timer) Repeat(offset, duration int, f func(Timer)) {
 	e := (t.Count() + offset) % duration
 	u := Timer{
 		min: 0,
@@ -39,7 +39,7 @@ func (t Timer) Repeat(duration, offset int, f func(Timer)) {
 	f(u)
 }
 
-func (t Timer) Every(interval, offset int, f func(Timer)) {
+func (t Timer) Every(offset, interval, f func(Timer)) {
 
 }
 
@@ -47,7 +47,7 @@ func (t Timer) ElapsedCount() int {
 	return t.Count() - t.min
 }
 
-func (t Timer) ElapsedRatio() float64 {
+func (t Timer) Ratio() float64 {
 	if t.max-t.min == 0 {
 		return 0
 	}
@@ -58,7 +58,7 @@ func _() {
 	var t Timer
 	t.Update()
 	t.Span(0, 100, func(u Timer) {
-		if u.ElapsedRatio() < 0.5 {
+		if u.Ratio() < 0.5 {
 
 		}
 	})

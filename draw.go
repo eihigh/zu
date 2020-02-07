@@ -50,7 +50,7 @@ func Rotate(a float64) DrawOptionFn {
 	}
 }
 
-func Copy(src, dst *ebiten.Image, opts ...DrawOptionFn) {
+func Copy(dst, src *ebiten.Image, opts ...DrawOptionFn) {
 	dio.GeoM.Reset()
 	for _, opt := range opts {
 		opt()

@@ -28,6 +28,9 @@ var (
 	quit = zu.Input{
 		Keys: []ebiten.Key{ebiten.KeyQ},
 	}
+
+	q = zu.Pt(0, 0)
+	t zu.Timer
 )
 
 func main() {
@@ -56,9 +59,15 @@ func update() error {
 	if pl.pos.Y > abyssY {
 		pl.pos.Y = abyssY
 	}
+
+	t.Update()
+	t.Repeat(0, 60, func(u zu.Timer) {
+		q.X = zu.Wave(0, 100, u.Ratio())
+	})
 	return nil
 }
 
 func draw() {
-	zu.Copy(e, nil, zu.Center(e), zu.MoveP(pl.pos))
+	zu.Copy(nil, e, zu.Center(e), zu.MoveP(pl.pos))
+	zu.Copy(nil, e, zu.MoveP(q))
 }
