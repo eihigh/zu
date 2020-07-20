@@ -56,9 +56,10 @@ func Print(dst *ebiten.Image, s string, fface font.Face, opts ...PrintOption) (w
 	}
 
 	bounds, _, _ := fface.GlyphBounds('M')
+	offsetX := -bounds.Min.X
 	offsetY := -bounds.Min.Y
 
-	x := p.x + float64(wholeW.Round())*p.rx
+	x := p.x + float64(wholeW.Round())*p.rx + float64(offsetX.Round())
 	y := p.y + float64(wholeH.Round())*p.ry + float64(offsetY.Round())
 
 	for i, line := range lines {
