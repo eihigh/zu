@@ -7,6 +7,7 @@ import (
 
 	"github.com/eihigh/zu"
 	"github.com/golang/freetype/truetype"
+	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/examples/resources/fonts"
 	"golang.org/x/image/font"
 )
@@ -40,10 +41,10 @@ func (a *app) Update() error {
 }
 
 func (a *app) Draw() {
-	text := "Hello\nWorld!"
+	text := "こんにちは\n世界。"
 	zu.Print(nil, text, a.mplus, zu.AlignLeft(), zu.Color(color.White))
-	zu.Print(nil, text, a.mplus, zu.AlignCenter(), zu.Move(vw/2, 0), zu.Rel(-0.5, 0), zu.Color(color.White))
-	zu.Print(nil, text, a.mplus, zu.AlignRight(), zu.Move(vw, 0), zu.Rel(-1, 0), zu.Color(color.White))
+	zu.Print(nil, text, a.mplus, zu.AlignCenter(), zu.Move(vw/2, vh/2), zu.Center(), zu.Color(color.White))
+	zu.Print(nil, text, a.mplus, zu.AlignRight(), zu.Move(vw, vh), zu.Rel(-1, -1), zu.Color(color.White))
 }
 
 func (a *app) Layout(w, h int) (int, int) {
@@ -51,6 +52,7 @@ func (a *app) Layout(w, h int) (int, int) {
 }
 
 func main() {
+	ebiten.SetWindowSize(vw, vh)
 	a, err := newApp()
 	if err != nil {
 		panic(err)
