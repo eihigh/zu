@@ -27,6 +27,11 @@ type printOption struct {
 
 // Print prints the text on the dst with the options.
 func Print(dst *ebiten.Image, s string, fface font.Face, opts ...PrintOption) (width, height int) {
+	lines := strings.Split(s, "\n")
+	if len(lines) == 0 {
+		return 0, 0
+	}
+
 	if dst == nil {
 		dst = screen
 	}
@@ -36,28 +41,30 @@ func Print(dst *ebiten.Image, s string, fface font.Face, opts ...PrintOption) (w
 		opt.applyPrintOption(p)
 	}
 
-	bounds, _, _ := fface.GlyphBounds('.')
-	offsetX := -bounds.Min.X
-	offsetY := -bounds.Min.Y
-	h := bounds.Max.Y - bounds.Min.Y
-
-	lines := strings.Split(s, "\n")
 	ws := make([]fixed.Int26_6, 0, len(lines))
+	hs := make([]fixed.Int26_6, 0, len(lines))
 	wholeW := fixed.Int26_6(0)
-	wholeH := h.Mul(fixed.I(len(lines))) // TODO consider line-height
+	wholeH := fixed.Int26_6(0)
 
 	for _, line := range lines {
-		w := font.MeasureString(fface, line)
+		bounds, w := font.BoundString(fface, line)
 		if wholeW < w {
 			wholeW = w
 		}
 		ws = append(ws, w)
+
+		h := bounds.Max.Y - bounds.Min.Y
+		wholeH += h // TODO consider line-height
+		hs = append(hs, h)
 	}
 
-	x := p.x + float64(offsetX.Round()) + float64(wholeW.Round())*p.rx
-	y := p.y + float64(offsetY.Round()) + float64(wholeH.Round())*p.ry
+	x := p.x + float64(wholeW.Round())*p.rx
+	y := p.y + float64(wholeH.Round())*p.ry
 
 	for i, line := range lines {
+		h := hs[i]
+		y += float64(h.Round())
+
 		w := ws[i]
 		u := x
 		switch p.align {
@@ -67,7 +74,6 @@ func Print(dst *ebiten.Image, s string, fface font.Face, opts ...PrintOption) (w
 			u += float64((wholeW - w).Round())
 		}
 		text.Draw(dst, line, fface, int(u+0.5), int(y+0.5), p.clr)
-		y += float64(h.Round())
 	}
 
 	return wholeW.Round(), wholeH.Round()
