@@ -42,29 +42,26 @@ func Print(dst *ebiten.Image, s string, fface font.Face, opts ...PrintOption) (w
 	}
 
 	ws := make([]fixed.Int26_6, 0, len(lines))
-	hs := make([]fixed.Int26_6, 0, len(lines))
 	wholeW := fixed.Int26_6(0)
-	wholeH := fixed.Int26_6(0)
+
+	h := fface.Metrics().Height
+	wholeH := h.Mul(fixed.I(len(lines)))
 
 	for _, line := range lines {
-		bounds, w := font.BoundString(fface, line)
+		_, w := font.BoundString(fface, line)
 		if wholeW < w {
 			wholeW = w
 		}
 		ws = append(ws, w)
-
-		h := bounds.Max.Y - bounds.Min.Y
-		wholeH += h // TODO consider line-height
-		hs = append(hs, h)
 	}
 
+	bounds, _, _ := fface.GlyphBounds('M')
+	offsetY := -bounds.Min.Y
+
 	x := p.x + float64(wholeW.Round())*p.rx
-	y := p.y + float64(wholeH.Round())*p.ry
+	y := p.y + float64(wholeH.Round())*p.ry + float64(offsetY.Round())
 
 	for i, line := range lines {
-		h := hs[i]
-		y += float64(h.Round())
-
 		w := ws[i]
 		u := x
 		switch p.align {
@@ -74,6 +71,7 @@ func Print(dst *ebiten.Image, s string, fface font.Face, opts ...PrintOption) (w
 			u += float64((wholeW - w).Round())
 		}
 		text.Draw(dst, line, fface, int(u+0.5), int(y+0.5), p.clr)
+		y += float64(h.Round())
 	}
 
 	return wholeW.Round(), wholeH.Round()

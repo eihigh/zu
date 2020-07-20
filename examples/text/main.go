@@ -41,7 +41,7 @@ func (a *app) Update() error {
 }
 
 func (a *app) Draw() {
-	text := "こんにちは\n世界。"
+	text := "Hello,\nWorld!"
 	zu.Print(nil, text, a.mplus, zu.AlignLeft(), zu.Color(color.White))
 	zu.Print(nil, text, a.mplus, zu.AlignCenter(), zu.Move(vw/2, vh/2), zu.Center(), zu.Color(color.White))
 	zu.Print(nil, text, a.mplus, zu.AlignRight(), zu.Move(vw, vh), zu.Rel(-1, -1), zu.Color(color.White))
