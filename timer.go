@@ -1,70 +1,126 @@
 package zu
 
+var (
+	tick = 0
+)
+
+func Now() int {
+	return tick
+}
+
 type Timer struct {
-	count1   int // count + 1
-	min, max int
+	from, to int
 }
 
-func (t *Timer) Update() {
-	t.count1++
+func NewTimer() Timer {
+	return Timer{from: Now() + 1}
 }
 
-func (t Timer) Count() int {
-	return t.count1 - 1 - t.min
+func (t *Timer) Reset() {
+	t.from = Now() + 1
 }
 
-func (t *Timer) setCount(c int) {
-	t.count1 = c + 1
+func (t Timer) Elapsed() int {
+	return Now() - t.from
 }
 
-func (t Timer) Span(start, end int, f func(Timer)) Timer {
-	if start <= t.Count() && t.Count() < end {
-		u := Timer{
-			count1: t.count1,
-			min:    start,
-			max:    end,
+func (t Timer) Elapsedf() float64 {
+	return float64(t.Elapsed())
+}
+
+func (t Timer) Rate() float64 {
+	if t.to == 0 {
+		return 0
+	}
+	return float64(Now()-t.from) / float64(t.to-t.from)
+}
+
+func (t Timer) Span(offset, duration int, f func(Timer)) Timer {
+	// endless
+	if duration < 0 {
+		u := Timer{from: t.from + offset}
+		if t.Elapsed() < offset {
+			return u
 		}
 		f(u)
+		return u
 	}
-	return t
+
+	u := Timer{from: t.from + offset + duration}
+	if t.Elapsed() < offset {
+		return u
+	}
+	if offset+duration <= t.Elapsed() {
+		return u
+	}
+	v := Timer{
+		from: t.from + offset,
+		to:   t.from + offset + duration,
+	}
+	f(v)
+	return u
+}
+
+func (t Timer) Once(f func()) {
+	if t.Elapsed() == 0 {
+		f()
+	}
 }
 
 func (t Timer) Repeat(offset, duration int, f func(Timer)) {
-	e := (t.Count() + offset) % duration
-	u := Timer{
-		min: 0,
-		max: duration,
+	if t.Elapsed() < offset {
+		return
 	}
-	u.setCount(e)
-	f(u)
+	e := int((t.Elapsed() - offset) / duration)
+	from := t.from + offset + e*duration
+	f(Timer{
+		from: from,
+		to:   from + duration,
+	})
 }
 
-func (t Timer) Every(offset, interval, f func(Timer)) {
-
-}
-
-func (t Timer) ElapsedCount() int {
-	return t.Count() - t.min
-}
-
-func (t Timer) Ratio() float64 {
-	if t.max-t.min == 0 {
-		return 0
+func (t Timer) Every(offset, interval int, f func()) {
+	if interval == 0 {
+		return
 	}
-	return float64(t.Count()-t.min) / float64(t.max-t.min)
+	if t.Elapsed() < offset {
+		return
+	}
+	if (t.Elapsed()-offset)%interval != 0 {
+		return
+	}
+	f()
 }
 
-func _() {
-	var t Timer
-	t.Update()
-	t.Span(0, 100, func(u Timer) {
-		if u.Ratio() < 0.5 {
+type State struct {
+	Timer
+	state string
 
-		}
-	})
-	t.Repeat(5, 0, func(u Timer) {
-		u.Repeat(2, 0, func(_ Timer) {
+	reservedState string
+	reserveFrom   int
+}
 
-		})
-	})
+func NewState(initializer string) State {
+	s := State{}
+	s.from = Now()
+	s.state = initializer
+	return s
+}
+
+func (s *State) Reserve(state string) {
+	s.reservedState = state
+	s.reserveFrom = Now() + 1
+}
+
+func (s *State) Continue(next string) {
+	s.state = next
+}
+
+func (s *State) Get() string {
+	if s.reserveFrom != 0 && s.reserveFrom <= Now() {
+		s.state = s.reservedState
+		s.from = Now()
+		s.reserveFrom = 0
+	}
+	return s.state
 }

@@ -6,12 +6,12 @@ import (
 )
 
 type Input struct {
-	Keys []ebiten.Key
+	Keys []Key
 }
 
 func (i *Input) IsDown() bool {
 	for _, k := range i.Keys {
-		if ebiten.IsKeyPressed(k) {
+		if ebiten.IsKeyPressed(ebiten.Key(k)) {
 			return true
 		}
 	}
@@ -20,7 +20,7 @@ func (i *Input) IsDown() bool {
 
 func (i *Input) OnDown() bool {
 	for _, k := range i.Keys {
-		if inpututil.IsKeyJustPressed(k) {
+		if inpututil.IsKeyJustPressed(ebiten.Key(k)) {
 			return true
 		}
 	}
