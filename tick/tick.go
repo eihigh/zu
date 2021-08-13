@@ -7,7 +7,12 @@ type Tick struct {
 	duration int
 }
 
-func (t Tick) Get() int { return t.t }
+func (t Tick) SubTick(start int) Tick {
+	return Tick{
+		t:     t.t,
+		start: start,
+	}
+}
 
 func (t Tick) Delta() int { return t.delta }
 

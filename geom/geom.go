@@ -12,12 +12,23 @@ type Point struct {
 	X, Y float64
 }
 
+func PtFromRect(r, theta float64) Point {
+	x := r * math.Cos(theta)
+	y := r * math.Sin(theta)
+	return Point{x, y}
+}
+
 func (p Point) String() string {
 	return "(" + strconv.FormatFloat(p.X, 'g', -1, 64) + "," + strconv.FormatFloat(p.Y, 'g', -1, 64) + ")"
 }
 
-func (p Point) Length() float64 {
+func (p Point) LengthSq() float64 {
 	return p.X*p.X + p.Y*p.Y
+}
+
+func (p Point) Normalize() Point {
+	l := math.Sqrt(p.LengthSq())
+	return Point{p.X / l, p.Y / l}
 }
 
 // Add returns the vector p+q.
