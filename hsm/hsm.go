@@ -91,9 +91,6 @@ func (h *HSM) Update() {
 	if state == nil {
 		panic(fmt.Errorf("hsm: state %q: %w", h.current, ErrUndefinedState))
 	}
-	if state.Update == nil {
-		return
-	}
 	state.Update(h)
 }
 
@@ -101,9 +98,6 @@ func (h *HSM) Draw() {
 	state := h.state(h.current)
 	if state == nil {
 		panic(fmt.Errorf("hsm: state %q: %w", h.current, ErrUndefinedState))
-	}
-	if state.Draw == nil {
-		return
 	}
 	state.Draw(h)
 }
