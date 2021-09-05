@@ -1,0 +1,3 @@
+package mathg
+
+// TODO curves
