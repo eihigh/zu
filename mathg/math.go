@@ -13,6 +13,16 @@ func Lerp(a, b, t float64) float64 {
 	return a + (b-a)*t
 }
 
+func Clamp(v float64) float64 {
+	if v > 1 {
+		return 1
+	}
+	if v < 0 {
+		return 0
+	}
+	return v
+}
+
 func Yoyo(v float64) float64 {
 	v *= 2
 	n := int(v)

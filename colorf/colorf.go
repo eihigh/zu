@@ -9,8 +9,8 @@ func RGBAf(clr color.Color) (r, g, b, a float64) {
 	return utof(R), utof(G), utof(B), utof(A)
 }
 
-// colorf.Color != color.Color
-type Color interface {
+// colorf.Color != color.Colorf
+type Colorf interface {
 	RGBAf() (r, g, b, a float64)
 }
 
